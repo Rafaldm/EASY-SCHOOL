@@ -19,7 +19,7 @@ Plataforma interativa para aprender PHP com sistema de metas diárias, calendár
 git clone https://github.com/seu-usuario/treinamento-php.git
 ```
 
-2. Abra `exercicios.html` em um navegador ou servidor local
+2. Abra `index.html` em um navegador ou servidor local
 
 3. Configure suas metas clicando no ícone ⚙️
 
