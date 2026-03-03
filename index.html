@@ -333,36 +333,63 @@
         .sidebar-left,
         .sidebar-right {
           display: none;
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          width: 100%;
-          height: 100vh;
-          max-height: 100vh;
-          z-index: 1050;
-          border-radius: 0;
-          padding: 20px;
-          overflow-y: auto;
         }
 
-        .sidebar-left.mobile-show,
-        .sidebar-right.mobile-show {
+        /* Seções colapsáveis mobile */
+        .mobile-collapse-section {
+          background: white;
+          border-radius: 15px;
+          padding: 15px;
+          margin-bottom: 20px;
+          box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .mobile-collapse-content {
+          display: none;
+          margin-top: 15px;
+        }
+
+        .mobile-collapse-content.show {
           display: block;
+        }
+
+        .mobile-toggle-btn {
+          width: 100%;
+          background: linear-gradient(135deg, #0d6efd, #0a58ca);
+          border: none;
+          color: white;
+          font-weight: 600;
+          padding: 12px;
+          border-radius: 10px;
+          font-size: 15px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          transition: all 0.3s;
+        }
+
+        .mobile-toggle-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+        }
+
+        .mobile-toggle-btn .arrow {
+          transition: transform 0.3s;
+        }
+
+        .mobile-toggle-btn.active .arrow {
+          transform: rotate(180deg);
         }
 
         .main-content {
           margin-left: 0;
           margin-right: 0;
-          padding: 20px 15px 100px 15px;
+          padding: 20px 15px;
           max-width: 100%;
         }
 
         .mobile-toggle {
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          display: none;
         }
 
         .card {
@@ -423,27 +450,6 @@
           font-size: 13px;
           padding: 12px;
         }
-
-        /* Botão de fechar sidebar mobile */
-        .mobile-close-btn {
-          display: block;
-          width: 100%;
-          margin-bottom: 20px;
-          background: linear-gradient(135deg, #6c757d, #5a6268);
-          border: none;
-          color: white;
-          font-weight: 600;
-          padding: 12px;
-          font-size: 15px;
-          border-radius: 8px;
-          transition: all 0.3s;
-        }
-
-        .mobile-close-btn:hover {
-          background: linear-gradient(135deg, #5a6268, #495057);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
       }
 
       /* Mobile pequeno */
@@ -489,10 +495,6 @@
         .celebration {
           font-size: 50px;
         }
-      }
-
-      .mobile-close-btn {
-        display: none;
       }
     </style>
   </head>
@@ -587,10 +589,6 @@
 
     <!-- SIDEBAR ESQUERDA -->
     <div class="sidebar-left" id="sidebarLeft">
-      <button class="btn mobile-close-btn" onclick="closeSidebar('left')">
-        ← Voltar aos Exercícios
-      </button>
-
       <h6>⏱ Tempo Total</h6>
       <div id="timerTotal" class="timer">00:00</div>
 
@@ -614,10 +612,6 @@
 
     <!-- SIDEBAR DIREITA -->
     <div class="sidebar-right" id="sidebarRight">
-      <button class="btn mobile-close-btn" onclick="closeSidebar('right')">
-        ← Voltar aos Exercícios
-      </button>
-
       <h6>🎯 Controle</h6>
 
       <button class="btn btn-primary w-100 mb-2" onclick="iniciar()">
@@ -662,27 +656,98 @@
       <div class="days-grid" id="dias"></div>
     </div>
 
-    <!-- BOTÃO FLUTUANTE MOBILE -->
-    <button class="mobile-toggle" onclick="toggleMobileMenu()">☰</button>
-
-    <!-- MENU MOBILE -->
-    <div class="mobile-menu" id="mobileMenu">
-      <button
-        class="btn btn-info btn-sm w-100 mb-2"
-        onclick="openSidebar('left')"
-      >
-        ⏱️ Cronômetro & Ranking
-      </button>
-      <button
-        class="btn btn-primary btn-sm w-100"
-        onclick="openSidebar('right')"
-      >
-        🎯 Metas & Calendário
-      </button>
-    </div>
-
     <!-- CONTEÚDO -->
     <div class="main-content">
+      <!-- SEÇÕES COLAPSÁVEIS MOBILE -->
+      <div class="mobile-collapse-section d-md-none">
+        <button
+          type="button"
+          class="mobile-toggle-btn"
+          onclick="toggleSection('timer')"
+          id="btnTimer"
+        >
+          <span>⏱️ Cronômetro & Ranking</span>
+          <span class="arrow">▼</span>
+        </button>
+        <div class="mobile-collapse-content" id="sectionTimer">
+          <h6>⏱ Tempo Total</h6>
+          <div id="timerTotalMobile" class="timer">00:00</div>
+
+          <h6 class="mt-3">🕒 Meta 20 Min</h6>
+          <div id="timerMetaMobile" class="timer text-success">00:00</div>
+
+          <div class="mt-3 d-flex gap-2">
+            <button class="btn btn-success btn-sm w-100" onclick="retomar()">
+              ▶
+            </button>
+            <button class="btn btn-warning btn-sm w-100" onclick="pausar()">
+              ⏸
+            </button>
+          </div>
+
+          <hr />
+
+          <h6>🏆 Ranking (Top 5)</h6>
+          <div id="rankingMobile" class="ranking"></div>
+        </div>
+      </div>
+
+      <div class="mobile-collapse-section d-md-none">
+        <button
+          type="button"
+          class="mobile-toggle-btn"
+          onclick="toggleSection('metas')"
+          id="btnMetas"
+        >
+          <span>🎯 Metas & Calendário</span>
+          <span class="arrow">▼</span>
+        </button>
+        <div class="mobile-collapse-content" id="sectionMetas">
+          <h6>🎯 Controle</h6>
+
+          <button class="btn btn-primary w-100 mb-2" onclick="iniciar()">
+            🚀 Iniciar
+          </button>
+          <button class="btn btn-warning w-100 mb-2" onclick="reiniciarMetas()">
+            🔄 Reiniciar Metas
+          </button>
+          <button class="btn btn-danger w-100 mb-3" onclick="reiniciarGeral()">
+            🧹 Reiniciar Geral
+          </button>
+
+          <hr />
+
+          <h6>
+            📊 Metas
+            <span
+              class="config-icon"
+              onclick="abrirConfigMetas()"
+              title="Configurar Metas"
+              >⚙️</span
+            >
+          </h6>
+          <div>
+            Finalizações: <span id="finalizacoesMobile">0</span>/<span
+              id="metaFinalizacoesTotalMobile"
+              >2</span
+            >
+          </div>
+          <div>
+            Acerto ≥ <span id="metaAcertoDisplayMobile">70</span>%:
+            <span id="metaAcertoMobile">❌</span>
+          </div>
+          <div>
+            <span id="metaTempoDisplayMobile">20</span> Min Online:
+            <span id="metaTempoMobile">❌</span>
+          </div>
+
+          <hr />
+
+          <h6>📅 Calendário</h6>
+          <div class="days-grid" id="diasMobile"></div>
+        </div>
+      </div>
+
       <h1 class="mb-4">20 Exercícios PHP 8.2 - Iniciante</h1>
       <div id="exercicios"></div>
 
@@ -721,11 +786,24 @@
       let metaAcertoMin = parseInt(localStorage.getItem("metaAcertoMin") || 70);
       let metaTempoMin = parseInt(localStorage.getItem("metaTempoMin") || 20);
 
-      document.getElementById("finalizacoes").innerText = finalizacoes;
-      document.getElementById("metaFinalizacoesTotal").innerText =
-        metaFinalizacoes;
-      document.getElementById("metaAcertoDisplay").innerText = metaAcertoMin;
-      document.getElementById("metaTempoDisplay").innerText = metaTempoMin;
+      // Função para sincronizar valores entre desktop e mobile
+      function sincronizarMetas() {
+        const elements = [
+          { id: "finalizacoes", value: finalizacoes },
+          { id: "metaFinalizacoesTotal", value: metaFinalizacoes },
+          { id: "metaAcertoDisplay", value: metaAcertoMin },
+          { id: "metaTempoDisplay", value: metaTempoMin },
+        ];
+
+        elements.forEach(({ id, value }) => {
+          const desktop = document.getElementById(id);
+          const mobile = document.getElementById(id + "Mobile");
+          if (desktop) desktop.innerText = value;
+          if (mobile) mobile.innerText = value;
+        });
+      }
+
+      sincronizarMetas();
 
       /* ======================= */
       /* EXERCÍCIOS */
@@ -1122,14 +1200,26 @@ ${ex.explicacao}
 
         // Verificar se atingiu a meta de tempo (metaTempoMin em minutos * 60 = segundos)
         if (tempoMeta >= metaTempoMin * 60) {
-          document.getElementById("metaTempo").innerText = "✔";
+          const checkMark = "✔";
+          const desktop = document.getElementById("metaTempo");
+          const mobile = document.getElementById("metaTempoMobile");
+          if (desktop) desktop.innerText = checkMark;
+          if (mobile) mobile.innerText = checkMark;
         }
       }, 1000);
 
       function atualizarTimer(id, t) {
         let m = String(Math.floor(t / 60)).padStart(2, "0");
         let s = String(t % 60).padStart(2, "0");
-        document.getElementById(id).innerText = `${m}:${s}`;
+        const timeString = `${m}:${s}`;
+
+        // Atualizar elemento principal
+        const element = document.getElementById(id);
+        if (element) element.innerText = timeString;
+
+        // Atualizar versão mobile se existir
+        const mobileElement = document.getElementById(id + "Mobile");
+        if (mobileElement) mobileElement.innerText = timeString;
       }
       atualizarTimer("timerTotal", tempoTotal);
       atualizarTimer("timerMeta", tempoMeta);
@@ -1163,7 +1253,15 @@ ${ex.explicacao}
           let s = (r.tempo % 60).toString().padStart(2, "0");
           html += `${i + 1}º - ${m}:${s} (${r.data})<br>`;
         });
-        document.getElementById("ranking").innerHTML = html || "Sem registros";
+        const rankingHTML = html || "Sem registros";
+
+        // Atualizar versão desktop
+        const rankingElement = document.getElementById("ranking");
+        if (rankingElement) rankingElement.innerHTML = rankingHTML;
+
+        // Atualizar versão mobile
+        const rankingMobileElement = document.getElementById("rankingMobile");
+        if (rankingMobileElement) rankingMobileElement.innerHTML = rankingHTML;
       }
       mostrarRanking();
 
@@ -1195,12 +1293,16 @@ ${ex.explicacao}
           `Acertos: ${acertos}/20 (${perc}%)`;
 
         if (perc >= metaAcertoMin) {
-          document.getElementById("metaAcerto").innerText = "✔";
+          const checkMark = "✔";
+          const desktop = document.getElementById("metaAcerto");
+          const mobile = document.getElementById("metaAcertoMobile");
+          if (desktop) desktop.innerText = checkMark;
+          if (mobile) mobile.innerText = checkMark;
         }
 
         finalizacoes++;
         localStorage.setItem("finalizacoesHoje", finalizacoes);
-        document.getElementById("finalizacoes").innerText = finalizacoes;
+        sincronizarMetas();
 
         verificarConclusao();
       }
@@ -1238,9 +1340,13 @@ ${ex.explicacao}
       /* ======================= */
 
       function carregarDias() {
-        let c = document.getElementById("dias");
+        const diasDesktop = document.getElementById("dias");
+        const diasMobile = document.getElementById("diasMobile");
+
         for (let i = 1; i <= 30; i++) {
-          c.innerHTML += `<div class="day" id="dia${i}">${i}</div>`;
+          const dayHTML = `<div class="day" id="dia${i}">${i}</div>`;
+          if (diasDesktop) diasDesktop.innerHTML += dayHTML;
+          if (diasMobile) diasMobile.innerHTML += dayHTML;
         }
       }
       carregarDias();
@@ -1300,11 +1406,8 @@ ${ex.explicacao}
         metaAcertoMin = novaMetaAcerto;
         metaTempoMin = novaMetaTempo;
 
-        // Atualizar display
-        document.getElementById("metaFinalizacoesTotal").innerText =
-          metaFinalizacoes;
-        document.getElementById("metaAcertoDisplay").innerText = metaAcertoMin;
-        document.getElementById("metaTempoDisplay").innerText = metaTempoMin;
+        // Atualizar display (sincronizar desktop e mobile)
+        sincronizarMetas();
 
         // Fechar modal
         const modal = bootstrap.Modal.getInstance(
@@ -1335,55 +1438,19 @@ ${ex.explicacao}
       /* MOBILE NAVIGATION */
       /* ======================= */
 
-      function toggleMobileMenu() {
-        const menu = document.getElementById("mobileMenu");
-        menu.classList.toggle("show");
+      function toggleSection(sectionName) {
+        const section = document.getElementById(
+          "section" +
+            sectionName.charAt(0).toUpperCase() +
+            sectionName.slice(1),
+        );
+        const btn = document.getElementById(
+          "btn" + sectionName.charAt(0).toUpperCase() + sectionName.slice(1),
+        );
+
+        section.classList.toggle("show");
+        btn.classList.toggle("active");
       }
-
-      function openSidebar(side) {
-        // Fechar menu mobile
-        document.getElementById("mobileMenu").classList.remove("show");
-
-        // Abrir sidebar apropriada
-        if (side === "left") {
-          document.getElementById("sidebarLeft").classList.add("mobile-show");
-        } else {
-          document.getElementById("sidebarRight").classList.add("mobile-show");
-        }
-
-        // Prevenir scroll no body
-        document.body.style.overflow = "hidden";
-      }
-
-      function closeSidebar(side) {
-        if (side === "left") {
-          document
-            .getElementById("sidebarLeft")
-            .classList.remove("mobile-show");
-        } else {
-          document
-            .getElementById("sidebarRight")
-            .classList.remove("mobile-show");
-        }
-
-        // Restaurar scroll
-        document.body.style.overflow = "auto";
-      }
-
-      // Fechar menu mobile ao clicar fora
-      document.addEventListener("click", function (e) {
-        const menu = document.getElementById("mobileMenu");
-        const toggle = document.querySelector(".mobile-toggle");
-
-        if (
-          menu &&
-          toggle &&
-          !menu.contains(e.target) &&
-          !toggle.contains(e.target)
-        ) {
-          menu.classList.remove("show");
-        }
-      });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
